@@ -4,9 +4,9 @@ import java.util.*;
 /**
  * @author Sheila Mbadi
  * 
- *         Hashcode 2020 Online Qualification Round
+ * Hashcode 2020 Online Qualification Round
  *
- *         Book scanning driver class
+ * Book scanning driver class
  * 
  */
 
@@ -37,47 +37,37 @@ public class Sassy
 					int noOfLibs = Integer.parseInt(line1[1]);
 					int maxScanningDays = Integer.parseInt(line1[2]);
 
-					
 					line = br.readLine();
 					String[] scoresStrings = line.split(" ");
-					//int bookScores[] = new int[totalBooks];
 					List<Book> bookScores = new ArrayList<Book>();
 
 					for (int i = 0; i < totalBooks; i++)
 					{
 						// read scores for the different books and save them in the book object
-						Book book = new Book();
-						
 						int score = Integer.parseInt(scoresStrings[i]);
+						
+						Book book = new Book();
 						book.setScore(score);
 						
 						bookScores.add(book);
-						
-						//bookScores[i] = Integer.parseInt(scoresStrings[i]);
 					}
 
-					// HashMap hm_libs = new HashMap();
-					List hm_libs = new ArrayList();
 					List libList = new ArrayList();
-
-					int noOfBooks = 0;
+					
 					for (int i = 0; i < noOfLibs; i++)
 					{
 						// library to store books
 						Library library = new Library();
 						
+						library.setLibNo(i);
+						
 						line = br.readLine();
-						HashMap hm = new HashMap();
-
 						String[] libraryDetails = line.split(" ");
 
-						noOfBooks = Integer.parseInt(libraryDetails[0]);
+						// line -> no of books in lib, sign up duration, max books to ship daily
+						int noOfBooks = Integer.parseInt(libraryDetails[0]);
 						int signUpDuration = Integer.parseInt(libraryDetails[1]);
 						int maxBooksToShip = Integer.parseInt(libraryDetails[2]);
-
-						hm.put("totalBooks", noOfBooks);
-						hm.put("signUpDuration", signUpDuration);
-						hm.put("maxBooksToShip", maxBooksToShip);
 						
 						library.setNoOfBooks(noOfBooks);
 						library.setSignUpTime(signUpDuration);
@@ -86,40 +76,28 @@ public class Sassy
 						line = br.readLine();
 						String[] booksInLibString = line.split(" ");
 
-						// int booksInLib[] = new int[noOfBooks];
-
-						ArrayList booksInLib = new ArrayList();
-						List books1 = new ArrayList();
-
-						HashMap hm_book_score = new HashMap();
+						List booksInLib = new ArrayList();
 
 						for (int j = 0; j < noOfBooks; j++)
 						{
-							// hm_book_score.put(Integer.parseInt(booksInLibString[j]), bookScores[j]);
-							// booksInLib.add(hm_book_score);
 							int bookNo = Integer.parseInt(booksInLibString[j]);
 							Book b = (Book) bookScores.get(j);
-							b.setBookNo(bookNo);
 							
-							books1.add(b);
+							int scoreValue = b.getScore();
 							
-							//booksInLib.add(Integer.parseInt(booksInLibString[j]));
+							Book newBook = new Book();
+							newBook.setBookNo(bookNo);
+							newBook.setScore(scoreValue);
+							
+							booksInLib.add(newBook);
 						}
 						
-						library.setBooks(books1);
-						library.setLibNo(i);
+						library.setBooks(booksInLib);
 
-						hm.put("booksInLib", booksInLib);
-						hm.put("library", i);
-						
 						libList.add(library);
-
-						// hm_libs.put(i, hm);
-						hm_libs.add(hm);
-
 					}
 					
-					System.out.println("Books: " + ((Library)libList.get(0)).getMaxBooksToShip());
+					System.out.println("Books: " + ((Library)libList.get(1)).getMaxBooksToShip());
 					
 					libList = sortLibraries(libList, 1);
 					libList = sortLibraries(libList, 2);
@@ -129,44 +107,30 @@ public class Sassy
 					FileWriter fw = new FileWriter("./output/" + outputs.get(f).toString());
 					BufferedWriter bw = new BufferedWriter(fw);
 
-					// bw.write("" + hm_libs.size());
 					bw.write("" + libList.size());
 					bw.newLine();
 
-					//for (int j = 0; j < hm_libs.size(); j++)
 					for (int j = 0; j < libList.size(); j++)
 					{
-
-						HashMap hashMap = (HashMap) hm_libs.get(j);
 						Library lib = (Library) (libList.get(j));
 
-						//bw.write("" + hashMap.get("library") + " ");
-						//bw.write("" + hashMap.get("totalBooks"));
 						bw.write("" + lib.getLibNo() + " ");
 						bw.write("" + lib.getNoOfBooks());
 						bw.newLine();
 
-						//ArrayList a = (ArrayList) hashMap.get("booksInLib");
-						
 						List<Book> libBooks = (List<Book>)lib.getBooks();
 
-						//for (int k = 0; k < a.size(); k++)
 						for (int k = 0; k < libBooks.size(); k++)
 						{
 							Book b = (Book) libBooks.get(k);
-							//bw.write("" + a.get(k) + " ");
 							bw.write("" + b.getBookNo() + " ");
 						}
-
-						// bw.write("" + hashMap.get("booksInLib"));
+						
 						bw.newLine();
-
 					}
 
 					bw.close();
 					fw.close();
-
-					// System.out.println("Hm: " + hm_libs);
 				} else {
 					System.out.println("Some parameters are missing in first line.");
 				}
