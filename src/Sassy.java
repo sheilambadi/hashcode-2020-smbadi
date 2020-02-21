@@ -22,33 +22,50 @@ public class Sassy
 
 			for (int f = 0; f < inputs.size(); f++)
 			{
+				// read file
 				FileReader fr = new FileReader(inputs.get(f).toString());
 				BufferedReader br = new BufferedReader(fr);
 
 				String line = br.readLine();
+				
+				// first line - no of diff books, no of libs, no of scanning days
 				String[] line1 = line.split(" ");
 
 				if (line1.length == 3)
 				{
 					int totalBooks = Integer.parseInt(line1[0]);
 					int noOfLibs = Integer.parseInt(line1[1]);
-					int maxDays = Integer.parseInt(line1[2]);
+					int maxScanningDays = Integer.parseInt(line1[2]);
 
+					
 					line = br.readLine();
 					String[] scoresStrings = line.split(" ");
-					int bookScores[] = new int[totalBooks];
+					//int bookScores[] = new int[totalBooks];
+					List<Book> bookScores = new ArrayList<Book>();
 
 					for (int i = 0; i < totalBooks; i++)
 					{
-						bookScores[i] = Integer.parseInt(scoresStrings[i]);
+						// read scores for the different books and save them in the book object
+						Book book = new Book();
+						
+						int score = Integer.parseInt(scoresStrings[i]);
+						book.setScore(score);
+						
+						bookScores.add(book);
+						
+						//bookScores[i] = Integer.parseInt(scoresStrings[i]);
 					}
 
 					// HashMap hm_libs = new HashMap();
 					List hm_libs = new ArrayList();
+					List libList = new ArrayList();
 
 					int noOfBooks = 0;
 					for (int i = 0; i < noOfLibs; i++)
 					{
+						// library to store books
+						Library library = new Library();
+						
 						line = br.readLine();
 						HashMap hm = new HashMap();
 
@@ -61,6 +78,10 @@ public class Sassy
 						hm.put("totalBooks", noOfBooks);
 						hm.put("signUpDuration", signUpDuration);
 						hm.put("maxBooksToShip", maxBooksToShip);
+						
+						library.setNoOfBooks(noOfBooks);
+						library.setSignUpTime(signUpDuration);
+						library.setMaxBooksToShip(maxBooksToShip);
 
 						line = br.readLine();
 						String[] booksInLibString = line.split(" ");
@@ -68,6 +89,7 @@ public class Sassy
 						// int booksInLib[] = new int[noOfBooks];
 
 						ArrayList booksInLib = new ArrayList();
+						List books1 = new ArrayList();
 
 						HashMap hm_book_score = new HashMap();
 
@@ -75,73 +97,65 @@ public class Sassy
 						{
 							// hm_book_score.put(Integer.parseInt(booksInLibString[j]), bookScores[j]);
 							// booksInLib.add(hm_book_score);
-							booksInLib.add(Integer.parseInt(booksInLibString[j]));
+							int bookNo = Integer.parseInt(booksInLibString[j]);
+							Book b = (Book) bookScores.get(j);
+							b.setBookNo(bookNo);
+							
+							books1.add(b);
+							
+							//booksInLib.add(Integer.parseInt(booksInLibString[j]));
 						}
+						
+						library.setBooks(books1);
+						library.setLibNo(i);
 
 						hm.put("booksInLib", booksInLib);
 						hm.put("library", i);
+						
+						libList.add(library);
 
 						// hm_libs.put(i, hm);
 						hm_libs.add(hm);
 
 					}
-
-					/*
-					Comparator<HashMap<String, Integer>> maxBooksComparator = new Comparator<HashMap<String, Integer>>()
-					{
-
-						@Override
-						public int compare(HashMap<String, Integer> o1, HashMap<String, Integer> o2)
-						{
-							// Get the distance and compare the distance.
-							Integer val1 = o1.get("maxBooksToShip");
-							Integer val2 = o2.get("maxBooksToShip");
-
-							return val2.compareTo(val1);
-						}
-					};
-
-					Comparator<HashMap<String, Integer>> signUpDurationComparator = new Comparator<HashMap<String, Integer>>()
-					{
-
-						@Override
-						public int compare(HashMap<String, Integer> o1, HashMap<String, Integer> o2)
-						{
-							// Get the distance and compare the distance.
-							Integer val1 = o1.get("signUpDuration");
-							Integer val2 = o2.get("signUpDuration");
-
-							return val1.compareTo(val2);
-						}
-					};
-
-					// And then sort it using collections.sort().
-					Collections.sort(hm_libs, maxBooksComparator);
-					Collections.sort(hm_libs, signUpDurationComparator);*/
 					
-					hm_libs = sortLibraries(hm_libs, "maxBooksToShip", true);
-					hm_libs = sortLibraries(hm_libs, "signUpDuration", false);
+					System.out.println("Books: " + ((Library)libList.get(0)).getMaxBooksToShip());
+					
+					libList = sortLibraries(libList, 1);
+					libList = sortLibraries(libList, 2);
+					//hm_libs = sortLibraries(hm_libs, "maxBooksToShip", true);
+					//hm_libs = sortLibraries(hm_libs, "signUpDuration", false);
 
 					FileWriter fw = new FileWriter("./output/" + outputs.get(f).toString());
 					BufferedWriter bw = new BufferedWriter(fw);
 
-					bw.write("" + hm_libs.size());
+					// bw.write("" + hm_libs.size());
+					bw.write("" + libList.size());
 					bw.newLine();
 
-					for (int j = 0; j < hm_libs.size(); j++)
+					//for (int j = 0; j < hm_libs.size(); j++)
+					for (int j = 0; j < libList.size(); j++)
 					{
 
 						HashMap hashMap = (HashMap) hm_libs.get(j);
+						Library lib = (Library) (libList.get(j));
 
-						bw.write("" + hashMap.get("library") + " ");
-						bw.write("" + hashMap.get("totalBooks"));
+						//bw.write("" + hashMap.get("library") + " ");
+						//bw.write("" + hashMap.get("totalBooks"));
+						bw.write("" + lib.getLibNo() + " ");
+						bw.write("" + lib.getNoOfBooks());
 						bw.newLine();
 
-						ArrayList a = (ArrayList) hashMap.get("booksInLib");
+						//ArrayList a = (ArrayList) hashMap.get("booksInLib");
+						
+						List<Book> libBooks = (List<Book>)lib.getBooks();
 
-						for (int k = 0; k < a.size(); k++)
+						//for (int k = 0; k < a.size(); k++)
+						for (int k = 0; k < libBooks.size(); k++)
 						{
-							bw.write("" + a.get(k) + " ");
+							Book b = (Book) libBooks.get(k);
+							//bw.write("" + a.get(k) + " ");
+							bw.write("" + b.getBookNo() + " ");
 						}
 
 						// bw.write("" + hashMap.get("booksInLib"));
@@ -153,6 +167,8 @@ public class Sassy
 					fw.close();
 
 					// System.out.println("Hm: " + hm_libs);
+				} else {
+					System.out.println("Some parameters are missing in first line.");
 				}
 			}
 		} catch (IOException e)
@@ -187,21 +203,37 @@ public class Sassy
 		return outputFiles;
 	}
 
-	public static List sortLibraries(List toSort, String key, boolean inAscendingOrder)
+	//public static List sortLibraries(List toSort, String key, boolean inAscendingOrder)
+	public static List sortLibraries(List toSort, int key)
 	{
-		Comparator<HashMap<String, Integer>> comparator = new Comparator<HashMap<String, Integer>>()
+		// Keys: 1-> maxBooksToShip, 2 -> signUpDuration
+		Comparator<Library> comparator = new Comparator<Library>()
 		{
 
+//			@Override
+//			public int compare(HashMap<String, Integer> o1, HashMap<String, Integer> o2)
+//			{
+//				Integer val1 = o1.get(key);
+//				Integer val2 = o2.get(key);
+//
+//				if (inAscendingOrder)
+//					return val2.compareTo(val2);
+//				else
+//					return val1.compareTo(val2);
+//			}
+			
 			@Override
-			public int compare(HashMap<String, Integer> o1, HashMap<String, Integer> o2)
+			public int compare(Library lib1, Library lib2)
 			{
-				Integer val1 = o1.get(key);
-				Integer val2 = o2.get(key);
-
-				if (inAscendingOrder)
+				if (key == 1) {
+					Integer val1 = lib1.getMaxBooksToShip();
+					Integer val2 = lib2.getMaxBooksToShip();
 					return val2.compareTo(val2);
-				else
+				} else {
+					Integer val1 = lib1.getSignUpTime();
+					Integer val2 = lib2.getSignUpTime();
 					return val1.compareTo(val2);
+				}
 			}
 		};
 
