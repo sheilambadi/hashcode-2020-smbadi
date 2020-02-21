@@ -1,14 +1,15 @@
 import java.io.*;
 import java.util.*;
 
-
 /**
  * @author Sheila Mbadi
  * 
- * Hashcode 2020 Online Qualification Round
+ *         Hashcode 2020 Online Qualification Round
  *
- * Book scanning
+ *         Book scanning driver class
+ * 
  */
+
 public class Sassy
 {
 
@@ -16,9 +17,9 @@ public class Sassy
 	{
 		try
 		{
-			ArrayList<String> inputs = inputFiles();
-			ArrayList<String> outputs= outputFiles();
-			
+			List<String> inputs = inputFiles();
+			List<String> outputs = outputFiles();
+
 			for (int f = 0; f < inputs.size(); f++)
 			{
 				FileReader fr = new FileReader(inputs.get(f).toString());
@@ -43,7 +44,7 @@ public class Sassy
 					}
 
 					// HashMap hm_libs = new HashMap();
-					ArrayList hm_libs = new ArrayList();
+					List hm_libs = new ArrayList();
 
 					int noOfBooks = 0;
 					for (int i = 0; i < noOfLibs; i++)
@@ -85,6 +86,7 @@ public class Sassy
 
 					}
 
+					/*
 					Comparator<HashMap<String, Integer>> maxBooksComparator = new Comparator<HashMap<String, Integer>>()
 					{
 
@@ -115,7 +117,10 @@ public class Sassy
 
 					// And then sort it using collections.sort().
 					Collections.sort(hm_libs, maxBooksComparator);
-					Collections.sort(hm_libs, signUpDurationComparator);
+					Collections.sort(hm_libs, signUpDurationComparator);*/
+					
+					hm_libs = sortLibraries(hm_libs, "maxBooksToShip", true);
+					hm_libs = sortLibraries(hm_libs, "signUpDuration", false);
 
 					FileWriter fw = new FileWriter("./output/" + outputs.get(f).toString());
 					BufferedWriter bw = new BufferedWriter(fw);
@@ -147,7 +152,7 @@ public class Sassy
 					bw.close();
 					fw.close();
 
-					//System.out.println("Hm: " + hm_libs);
+					// System.out.println("Hm: " + hm_libs);
 				}
 			}
 		} catch (IOException e)
@@ -156,9 +161,9 @@ public class Sassy
 		}
 	}
 
-	public static ArrayList<String> inputFiles()
+	public static List<String> inputFiles()
 	{
-		ArrayList<String> inputFiles = new ArrayList<String>();
+		List<String> inputFiles = new ArrayList<String>();
 		inputFiles.add("a_example.txt");
 		inputFiles.add("b_read_on.txt");
 		inputFiles.add("c_incunabula.txt");
@@ -168,18 +173,40 @@ public class Sassy
 
 		return inputFiles;
 	}
-	
-	public static ArrayList<String> outputFiles()
+
+	public static List<String> outputFiles()
 	{
-		ArrayList<String> outputFiles = new ArrayList<String>();
+		List<String> outputFiles = new ArrayList<String>();
 		outputFiles.add("a_out.txt");
 		outputFiles.add("b_out.txt");
 		outputFiles.add("c_out.txt");
 		outputFiles.add("d_out.txt");
 		outputFiles.add("e_out.txt");
 		outputFiles.add("f_out.txt");
-		
+
 		return outputFiles;
+	}
+
+	public static List sortLibraries(List toSort, String key, boolean inAscendingOrder)
+	{
+		Comparator<HashMap<String, Integer>> comparator = new Comparator<HashMap<String, Integer>>()
+		{
+
+			@Override
+			public int compare(HashMap<String, Integer> o1, HashMap<String, Integer> o2)
+			{
+				Integer val1 = o1.get(key);
+				Integer val2 = o2.get(key);
+
+				if (inAscendingOrder)
+					return val2.compareTo(val2);
+				else
+					return val1.compareTo(val2);
+			}
+		};
+
+		Collections.sort(toSort, comparator);
+		return toSort;
 	}
 
 }
