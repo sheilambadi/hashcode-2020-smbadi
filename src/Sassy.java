@@ -4,9 +4,9 @@ import java.util.*;
 /**
  * @author Sheila Mbadi
  * 
- * Hashcode 2020 Online Qualification Round
+ *         Hashcode 2020 Online Qualification Round
  *
- * Book scanning driver class
+ *         Book scanning driver class
  * 
  */
 
@@ -27,7 +27,7 @@ public class Sassy
 				BufferedReader br = new BufferedReader(fr);
 
 				String line = br.readLine();
-				
+
 				// first line - no of diff books, no of libs, no of scanning days
 				String[] line1 = line.split(" ");
 
@@ -45,22 +45,22 @@ public class Sassy
 					{
 						// read scores for the different books and save them in the book object
 						int score = Integer.parseInt(scoresStrings[i]);
-						
+
 						Book book = new Book();
 						book.setScore(score);
-						
+
 						bookScores.add(book);
 					}
 
 					List libList = new ArrayList();
-					
+
 					for (int i = 0; i < noOfLibs; i++)
 					{
 						// library to store books
 						Library library = new Library();
-						
+
 						library.setLibNo(i);
-						
+
 						line = br.readLine();
 						String[] libraryDetails = line.split(" ");
 
@@ -68,7 +68,7 @@ public class Sassy
 						int noOfBooks = Integer.parseInt(libraryDetails[0]);
 						int signUpDuration = Integer.parseInt(libraryDetails[1]);
 						int maxBooksToShip = Integer.parseInt(libraryDetails[2]);
-						
+
 						library.setNoOfBooks(noOfBooks);
 						library.setSignUpTime(signUpDuration);
 						library.setMaxBooksToShip(maxBooksToShip);
@@ -82,27 +82,28 @@ public class Sassy
 						{
 							int bookNo = Integer.parseInt(booksInLibString[j]);
 							Book b = (Book) bookScores.get(j);
-							
+
 							int scoreValue = b.getScore();
-							
+
 							Book newBook = new Book();
 							newBook.setBookNo(bookNo);
 							newBook.setScore(scoreValue);
-							
+
 							booksInLib.add(newBook);
 						}
-						
+
+						// sort books then add
+						booksInLib = sortBooks(booksInLib);
+
 						library.setBooks(booksInLib);
 
 						libList.add(library);
 					}
-					
-					System.out.println("Books: " + ((Library)libList.get(1)).getMaxBooksToShip());
-					
+
+					System.out.println("Books: " + ((Library) libList.get(0)).getMaxBooksToShip());
+
 					libList = sortLibraries(libList, 1);
 					libList = sortLibraries(libList, 2);
-					//hm_libs = sortLibraries(hm_libs, "maxBooksToShip", true);
-					//hm_libs = sortLibraries(hm_libs, "signUpDuration", false);
 
 					FileWriter fw = new FileWriter("./output/" + outputs.get(f).toString());
 					BufferedWriter bw = new BufferedWriter(fw);
@@ -118,20 +119,21 @@ public class Sassy
 						bw.write("" + lib.getNoOfBooks());
 						bw.newLine();
 
-						List<Book> libBooks = (List<Book>)lib.getBooks();
+						List<Book> libBooks = (List<Book>) lib.getBooks();
 
 						for (int k = 0; k < libBooks.size(); k++)
 						{
 							Book b = (Book) libBooks.get(k);
 							bw.write("" + b.getBookNo() + " ");
 						}
-						
+
 						bw.newLine();
 					}
 
 					bw.close();
 					fw.close();
-				} else {
+				} else
+				{
 					System.out.println("Some parameters are missing in first line.");
 				}
 			}
@@ -167,37 +169,50 @@ public class Sassy
 		return outputFiles;
 	}
 
-	//public static List sortLibraries(List toSort, String key, boolean inAscendingOrder)
+	// public static List sortLibraries(List toSort, String key, boolean
+	// inAscendingOrder)
 	public static List sortLibraries(List toSort, int key)
 	{
-		// Keys: 1-> maxBooksToShip, 2 -> signUpDuration
+		// Keys: 1-> maxBooksToShip, 2 -> signUpDuration, 3 -> Book score
 		Comparator<Library> comparator = new Comparator<Library>()
 		{
-
-//			@Override
-//			public int compare(HashMap<String, Integer> o1, HashMap<String, Integer> o2)
-//			{
-//				Integer val1 = o1.get(key);
-//				Integer val2 = o2.get(key);
-//
-//				if (inAscendingOrder)
-//					return val2.compareTo(val2);
-//				else
-//					return val1.compareTo(val2);
-//			}
-			
 			@Override
 			public int compare(Library lib1, Library lib2)
 			{
-				if (key == 1) {
+				if (key == 1)
+				{
+					// max book to ship in ascending order
 					Integer val1 = lib1.getMaxBooksToShip();
 					Integer val2 = lib2.getMaxBooksToShip();
-					return val2.compareTo(val2);
-				} else {
+					return val2.compareTo(val1);
+				} else if (key == 2)
+				{
+					// sign up time in descending order
 					Integer val1 = lib1.getSignUpTime();
 					Integer val2 = lib2.getSignUpTime();
 					return val1.compareTo(val2);
+				} else
+				{
+					return 0;
 				}
+			}
+		};
+
+		Collections.sort(toSort, comparator);
+		return toSort;
+	}
+
+	public static List sortBooks(List toSort)
+	{
+		// set in ascending order of score
+		Comparator<Book> comparator = new Comparator<Book>()
+		{
+			@Override
+			public int compare(Book book1, Book book2)
+			{
+				Integer val1 = book1.getScore();
+				Integer val2 = book2.getScore();
+				return val2.compareTo(val1);
 			}
 		};
 
